@@ -1,0 +1,13 @@
+numpy
+xarray
+matplotlib
+scikit-learn
+joblib
+PyYAML
+pystac
+pystac-client
+stackstac
+rasterio
+rioxarray
+geopandas
+zarr

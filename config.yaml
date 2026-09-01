@@ -1,0 +1,48 @@
+# Sentinel-2 search
+stac:
+  url: "https://earth-search.aws.element84.com/v1"
+  collection: "sentinel-2-l2a"
+  start_date: "2026-01-01"
+  end_date : "2026-01-02"
+  max_cloud_cover: 10
+  
+# Area of interest
+aoi:
+  polygon : 
+    name: "kano_metro.gpkg" 
+    crs: "EPSG:4326"
+  bbox : #[ 8.387695256730751,11.864277078124701,  8.647971473804546, 12.137043525838122]
+# Stacking
+stack:
+  resolution: 10
+  epsg: 32632
+
+# Training
+training:
+  samples_per_class: 3000
+  random_state: 42
+  train_size: 0.7
+  n_estimators : 100
+
+# Classification thresholds
+thresholds:
+  vegetation:
+    ndvi: 0.7
+    ndvi_re: 0.0
+
+  water:
+    ndwi: 0.0
+    mndwi: 0.0
+
+  builtup:
+    ndvi: 0.2
+    bui: 0.05
+    ndbi: 0.1
+
+  baresoil:
+    ndvi: 0.2
+    dbsi: 0.26
+    ndti: 0.05
+
+model:
+  name: "landcover_rf"
