@@ -42,7 +42,7 @@ def get_bbox(aoi: str | None = None) -> tuple:
         if aoi_config["bbox"]:
             return aoi_config["bbox"]
         raise ValueError("No AOI supplied. Provide either a polygon or bbox.")
-    gdf = gpd.read_file(polygon)
+    gdf = gpd.read_file(find_file(polygon))
     if gdf.crs is None:
         if polygon_crs is None:
             raise ValueError("AOI polygon has no CRS. Specify its CRS in config.")
@@ -63,3 +63,8 @@ def bbox_transform(bbox: tuple, raster_crs: str) -> tuple:
     minx, miny = transformer.transform(bbox[0], bbox[1])
     maxx, maxy = transformer.transform(bbox[2], bbox[3])
     return minx, miny, maxx, maxy
+
+def find_file(filename: str) -> Path:
+    for path in Path(".").rglob(filename):
+        return path
+    raise FileNotFoundError(f"{filename} not found in project directory.")

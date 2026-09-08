@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 
 import rioxarray
 
-from .utils import load_config, bbox_transform  
+from .utils import load_config, bbox_transform ,find_file 
 
 config = load_config()
 
@@ -50,7 +50,7 @@ def clip_dataset(zarr_dataset: xr.DataArray, aoi: str | tuple | None = None ) ->
     if not polygon:
         return zarr_dataset
     try:
-        gdf = gpd.read_file(polygon)
+        gdf = gpd.read_file(find_file(polygon))
     except Exception as e:
         print(e ,'Error occur while trying to read polygon')
     raster_crs = zarr_dataset.attrs["epsg"]
