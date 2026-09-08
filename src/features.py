@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 
 import rioxarray
 
-from .utils import load_config  
+from .utils import load_config, bbox_transform  
 
 config = load_config()
 
@@ -42,7 +42,9 @@ def clip_dataset(zarr_dataset: xr.DataArray, aoi: str | tuple | None = None ) ->
         if isinstance(aoi, str):
             polygon = aoi
         else:
-            return zarr_dataset
+            raster_crs = zarr_dataset.attrs["epsg"]
+            bbox = bbox_transform(aoi, raster_crs)
+            return zarr_dataset.rio.write_crs(raster_crs).rio.clip_box(*bbox)
     else:
         polygon = config["aoi"]["polygon"]["name"]
     if not polygon:

@@ -11,3 +11,4 @@ rasterio
 rioxarray
 geopandas
 zarr
+pyproj

@@ -36,7 +36,7 @@ def classify(zarr_dataset: xr.DataArray, model: RandomForestClassifier) -> xr.Da
         coords={"pixel_yx": prepared_dataset.pixel_yx}
     ).unstack("pixel_yx")
 
-def visualise_classification(classification: xr.DataArray, output_path: Path | None = None) -> None:
+def visualise_classification(classification: xr.DataArray, output_path: Path |None=None) -> None:
     """Display and save the classified land-cover map."""
 
     cmap = ListedColormap(["green", "red", "blue", "saddlebrown"])
@@ -68,17 +68,20 @@ def classify_scene(
     start_date: str | None = None,
     end_date: str |None = None, 
     aoi: tuple | str | None = None, 
-    zarr_dataset: xr.DataArray | None =None
+    zarr_dataset: xr.DataArray | None =None,
+    dataset_name : str | None = None
     ) -> None:
     """Retrieve, preprocess, and classify a date range or a dataset using an already saved model."""
 
     model = load_model()
-    output_path = None     
+    output_path = None
     if zarr_dataset is None:
         zarr_path = preprocess(start_date, end_date, aoi)
         zarr_dataset = open_zarr(zarr_path)
         date_range = Path(zarr_path).stem
-        output_path = dirs["maps"] / f"{date_range}.png"    
+        output_path = dirs["maps"] / f"{date_range}.png" 
+    elif dataset_name is not None:
+        output_path = dirs["maps"] / f"{Path(dataset_name).stem}.png"   
     dataset = clip_dataset(zarr_dataset, aoi)
     classification = classify(dataset, model)
     visualise_classification(classification, output_path)

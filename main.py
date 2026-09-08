@@ -84,12 +84,12 @@ def run_training(config, dataset=None):
 def run_classify(start=None, end=None, aoi=None, dataset=None):
     """Classify a requested date range using the saved model."""
     if dataset is not None:
-        classify_scene(dataset=dataset)
+        classify_scene(zarr_dataset=dataset, aoi=aoi)
     else:
         dataset_name = f"{start}_{end}.zarr"
-        dataset = get_dataset(dataset_name= dataset_name)
+        dataset = get_dataset(dataset_name = dataset_name)
         if dataset is not None:
-            classify_scene(zarr_dataset= dataset, aoi=aoi)
+            classify_scene(zarr_dataset= dataset, aoi=aoi, dataset_name = dataset_name)
         else:
             classify_scene(start_date=start, end_date=end, aoi=aoi)
 
@@ -102,9 +102,17 @@ def main():
     )
     parser.add_argument("--start")
     parser.add_argument("--end")
-    parser.add_argument("--aoi")
+    parser.add_argument("--aoi", nargs="+")
     args = parser.parse_args()
     config = load_config()
+
+    if args.aoi:
+        if len(args.aoi) == 4:
+            args.aoi = tuple(map(float, args.aoi))
+        elif len(args.aoi) == 1:
+            args.aoi = args.aoi[0]
+        else:
+            parser.error("--aoi must be a polygon path or four bbox coordinates")
 
     if args.stage == "search":
         run_search(args.start, args.end, args.aoi)
@@ -116,8 +124,10 @@ def main():
         run_training(config)
     elif args.stage == "classify":
         if not args.start or not args.end:
-            parser.error("--start and --end are required for the classify stage") 
-        run_classify(start=args.start, end=args.end, aoi=args.aoi)
+            dataset = get_dataset(config=config)
+            run_classify(dataset=dataset, aoi= args.aoi)
+        else: 
+            run_classify(start=args.start, end=args.end, aoi=args.aoi)
     elif args.stage == "all":
         dataset = get_dataset(config=config)
         run_samples(config,  dataset)
