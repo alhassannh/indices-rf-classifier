@@ -153,10 +153,16 @@ outputs/
 
 ## Example Results
 
-### Land-cover classification
-
-![Land-cover classification map](outputs/maps/2026-01-01_2026-01-31.png)
+Running the workflow generates visual outputs for both the training samples and the final classification.
 
 ### Training samples
 
+The `samples` stage automatically extracts rule-based training samples for each land-cover class and generates a visualisation of the sampled pixels. The plot is saved to `outputs/maps/training_samples.png`.
+
 ![Training samples](outputs/maps/training_samples.png)
+
+### Land-cover classification
+
+The `classify` stage generates a land-cover classification map from the trained Random Forest model. Classification maps are saved to `outputs/maps/` using the processed date range as the filename.
+
+![Land-cover classification map](outputs/maps/2026-05-01_2026-05-10.png)
