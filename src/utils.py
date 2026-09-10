@@ -1,18 +1,16 @@
 """Utility functions used across the workflow."""
 
+import yaml
+
+import xarray as xr
+import geopandas as gpd
+
 from pathlib import Path
 from pyproj import Transformer
 
-import yaml
-
-import geopandas as gpd
-import xarray as xr
-
-
-
 def load_config(path: str = "config.yaml") -> dict:
     """Load workflow configuration from the YAML file and."""
-    
+
     with open(path, "r") as f:
         return yaml.safe_load(f)
 
@@ -65,6 +63,7 @@ def bbox_transform(bbox: tuple, raster_crs: str) -> tuple:
     return minx, miny, maxx, maxy
 
 def find_file(filename: str) -> Path:
+    """Finds AOI path/directory from the specified name"""
     for path in Path(".").rglob(filename):
         return path
     raise FileNotFoundError(f"{filename} not found in project directory.")

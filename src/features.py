@@ -24,14 +24,14 @@ Pixels already assigned to an earlier class are excluded from
 subsequent classes.
 """
 
-import geopandas as gpd
-import numpy as np
-import xarray as xr
-import matplotlib.pyplot as plt
-
 import rioxarray
 
-from .utils import load_config, bbox_transform ,find_file 
+import numpy as np
+import xarray as xr
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+from .utils import load_config, bbox_transform ,find_file, output_dirs 
 
 config = load_config()
 
@@ -273,10 +273,12 @@ def visualise_samples(samples_yx: xr.DataArray,clean_data: xr.DataArray) -> None
         ax.set_axis_off()
         ax.set_title(class_ids[class_key])
     plt.tight_layout()
-    plt.show()
+    output_path = output_dirs()["maps"] / "training_samples.png"
+    plt.savefig(output_path, dpi=300, bbox_inches="tight")
+    print("Clustered Samples window successfully plotted and saved to", output_path)
 
 if __name__ == "__main__":
-    from .utils import open_zarr, output_dirs
+    from .utils import open_zarr
     
     zarr_dir = output_dirs()["zarr"]
     # Reconstruct dataset name for reopening

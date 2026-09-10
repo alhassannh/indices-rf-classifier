@@ -1,14 +1,14 @@
 import joblib
-import matplotlib.pyplot as plt
 import xarray as xr
+import matplotlib.pyplot as plt
 
 from pathlib import Path
 from matplotlib.colors import ListedColormap
 from sklearn.ensemble import RandomForestClassifier
 
-from .features import clip_dataset, prepare_dataset
 from .preprocess import preprocess
-from .utils import output_dirs,load_config, open_zarr
+from .features import clip_dataset, prepare_dataset
+from .utils import output_dirs, load_config, open_zarr
 
 
 dirs = output_dirs()
@@ -62,6 +62,7 @@ def visualise_classification(classification: xr.DataArray, output_path: Path |No
     plt.tight_layout()
     if output_path:
         plt.savefig(output_path, dpi=300, bbox_inches="tight")
+        print("Map successfully saved to", output_path)
     plt.show()
 
 def classify_scene(
@@ -83,7 +84,9 @@ def classify_scene(
     elif dataset_name is not None:
         output_path = dirs["maps"] / f"{Path(dataset_name).stem}.png"   
     dataset = clip_dataset(zarr_dataset, aoi)
+    print("Classifying pixels...")
     classification = classify(dataset, model)
+    print("Creating classification map...")
     visualise_classification(classification, output_path)
 
 if __name__ == "__main__":

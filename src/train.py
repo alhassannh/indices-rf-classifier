@@ -10,11 +10,11 @@ This module:
 import json
 import joblib
 
-import datetime as dt
 import xarray as xr
+import datetime as dt
 
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 
 from .utils import output_dirs, load_config, get_bbox 
@@ -41,6 +41,7 @@ def train_model(training_samples: xr.DataArray) -> tuple[RandomForestClassifier,
         n_estimators = config["training"]["n_estimators"],
         random_state = config["training"]["random_state"]
     )
+    print("Training Random Forest...")
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
@@ -72,6 +73,7 @@ def save_model(model: RandomForestClassifier,accuracy: float,report: dict) -> No
     }
     with open(metadata_path, "w") as file:
         json.dump(metadata, file, indent=4)
+    print(f"Models successfully saved to {model_path}")
     
 if __name__ == "__main__":
     from .features import select_samples

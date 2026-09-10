@@ -8,8 +8,8 @@ This module:
 - returns the matching STAC items as an ItemCollection.
 """
 
-from pystac import ItemCollection
 from pystac_client import Client
+from pystac import ItemCollection
 
 from .utils import get_bbox, load_config
 
@@ -53,13 +53,12 @@ def stac_search(aoi: str | tuple | None = None ,start: str |None = None, end : s
     if len(items) == 0:
         raise ValueError("No scenes found for the specified AOI, date range, and cloud-cover threshold.")
 
-    print(f"Search returned {len(items)} scenes covering AOI.")
     return items, date_range, bbox
-
 
 if __name__ == "__main__":
 
     collection , _, _ = stac_search()
+    print(f"Search returned {len(collection)} scenes covering AOI.") 
     for item in collection:
         print(
             f"Scene ID: {item.id}, "

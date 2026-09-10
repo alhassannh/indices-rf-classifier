@@ -12,12 +12,13 @@ in the workflow config to query STAC for items, but different start and
 end dates and AOI can be supplied when needed. 
 """
 
-from pystac import ItemCollection
-from rasterio.enums import Resampling
-from pathlib import Path
+import stackstac
 
 import xarray as xr
-import stackstac
+
+from pathlib import Path
+from pystac import ItemCollection
+from rasterio.enums import Resampling
 
 from .data_request import stac_search
 from .utils import load_config, output_dirs
@@ -33,8 +34,10 @@ def preprocess(start_date: str | None = None, end_date: str | None = None, aoi: 
     configuration values.
     """
     items, date_range, bbox = stac_search(aoi, start_date, end_date)
+    print(f"Found {len(items)} scenes.")
+    print("Stacking scenes bands and masking clouds...")
     stacked_bands = stack_bands(items=items, bbox=bbox)
-
+    print("Creating temporal composite and exporting to Zarr...")
     return zarr_export(stacked_bands, date_range, dirs["zarr"])
 
 def stack_bands(items: ItemCollection, bbox: tuple) -> xr.DataArray:
@@ -82,7 +85,7 @@ def zarr_export(masked_bands: xr.DataArray, date_range: str, output_dir: Path) -
     zarr_file_name = f"{date_range}.zarr"
     output_path = output_dir / zarr_file_name
     clean_composite.to_dataset(name="sentinel2").to_zarr(output_path,mode="w")
-
+    print("Preprocessing Complete \nTemporal Composite successfully exported to:",output_path)
     return output_path
 
 if __name__ == "__main__":

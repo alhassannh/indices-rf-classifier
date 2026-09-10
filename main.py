@@ -56,6 +56,7 @@ def get_dataset(config = None, dataset_name= None):
 def run_search(start = None, end = None, aoi = None):
     """Search and display available STAC scenes."""
     items, _, _ = stac_search(start=start, end=end, aoi=aoi)
+    print(f"Search returned {len(items)} scenes covering AOI.")
     for item in items:
         print(
             f"Scene ID: {item.id}, "
@@ -64,23 +65,24 @@ def run_search(start = None, end = None, aoi = None):
         )
 def run_preprocess(start = None, end = None, aoi = None):
     """Create the configured Zarr dataset."""
-    path = preprocess(start_date=start, end_date= end, aoi=aoi)
-    print("Composite Image successfully exported to Zarr:", path)
+    _  = preprocess(start_date=start, end_date= end, aoi=aoi)
+    
 def run_samples(config, dataset=None):
     """Select and visualise training samples."""
     if dataset is None:
         dataset = get_dataset(config)
-    _, samples_yx = select_samples(dataset)
+    samples, samples_yx = select_samples(dataset)
     clipped_dataset = clip_dataset(dataset)
     visualise_samples(samples_yx, clipped_dataset)
-def run_training(config, dataset=None):
+    return samples
+def run_training(config, samples=None):
     """Select training samples and train the Random Forest model."""
-    if dataset is None:
+    if samples is None:
         dataset = get_dataset(config)
-    training_samples, _ = select_samples(dataset)
-    model, accuracy, report = train_model(training_samples)
+        samples, _ = select_samples(dataset)
+    model, accuracy, report = train_model(samples)
     save_model(model, accuracy, report)
-    print(f"Model successfully saved to {output_dirs()['models']}")
+
 def run_classify(start=None, end=None, aoi=None, dataset=None):
     """Classify a requested date range using the saved model."""
     if dataset is not None:
@@ -119,7 +121,7 @@ def main():
     elif args.stage == "preprocess":
         run_preprocess(args.start, args.end, args.aoi)
     elif args.stage == "samples":
-        run_samples(config)
+        _ = run_samples(config)
     elif args.stage == "train":
         run_training(config)
     elif args.stage == "classify":
@@ -130,8 +132,8 @@ def main():
             run_classify(start=args.start, end=args.end, aoi=args.aoi)
     elif args.stage == "all":
         dataset = get_dataset(config=config)
-        run_samples(config,  dataset)
-        run_training(config, dataset)
+        samples = run_samples(config,  dataset)
+        run_training(config, samples)
         run_classify(dataset=dataset)
 
 if __name__ == "__main__":
