@@ -165,4 +165,4 @@ The `samples` stage automatically extracts rule-based training samples for each 
 
 The `classify` stage generates a land-cover classification map from the trained Random Forest model. Classification maps are saved to `outputs/maps/` using the processed date range as the filename.
 
-![Land-cover classification map](outputs/maps/2026-05-01_2026-05-10.png)
+![Land-cover classification map](outputs/maps/2026-01-01_2026-01-31.png)
